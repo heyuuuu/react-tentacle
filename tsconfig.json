@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": true,
+        "outDir": "./lib",
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "suppressImplicitAnyIndexErrors": true,
+        "lib": ["ES2015","ES2016","DOM"]
+    },
+    "include": ["src/*","types"],
+    "exclude": ["node_modules"]
+}

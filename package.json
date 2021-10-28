@@ -1,0 +1,24 @@
+{
+  "name": "react-tentacle",
+  "version": "0.0.1",
+  "description": "react简易状态管理,目前仅适用于函数式组件",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heyuuuu/react-tentacle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/heyuuuu/react-tentacle/issues"
+  },
+  "homepage": "https://github.com/heyuuuu/react-tentacle#readme",
+  "devDependencies": {
+    "@types/react": "^17.0.33",
+    "react": "^17.0.2",
+    "typescript": "^4.4.4"
+  }
+}
