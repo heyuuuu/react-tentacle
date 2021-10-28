@@ -13,7 +13,7 @@ type State = Record<string, unknown>
 // 调度器(订阅发布中心)
 class Scheduler<T extends State, K extends keyof T>{
 
-	private state = <T>{}
+	public state = <T>{}
 
 	private nextState = <Partial<T>>{}
 
