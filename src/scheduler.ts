@@ -11,24 +11,26 @@ type State = Record<string, unknown>
 // 调度器(订阅发布中心)
 class Scheduler<T extends State, K extends keyof T>{
 
-	private state: Partial<T> = {}
+	private state = <T>{}
 
-	private list: ListItem<Partial<T>>[] = []
+	private nextState = <Partial<T>>{}
+
+	private list: ListItem<T>[] = []
 
 	constructor(state: T) {
-		this.state = state
+		this.state = Object.assign({}, state)
 	}
 
 	// 执行调度
-	private handleAction(item: ListItem<Partial<T>>) {
+	private handleAction(item: ListItem<T>) {
 		// 是否有相关依赖数组
 		if(item.deps) {
 			// 判断相关依赖是否更新
-			if(item.deps.find(k => k in this.state)) {
-				item.callback(this.state)
+			if(item.deps.find(k => k in this.nextState)) {
+				item.callback(Object.assign(this.state, this.nextState))
 			}
 		}else {
-			item.callback(this.state)
+			item.callback(Object.assign(this.state, this.nextState))
 		}
 	}
 
@@ -39,7 +41,7 @@ class Scheduler<T extends State, K extends keyof T>{
 
 	// 触发调度任务
 	public dispatch(state: Partial<T>) {
-		this.state = state
+		this.nextState = state
 		this.triggerAction()
 	}
 
