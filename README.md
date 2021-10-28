@@ -8,7 +8,8 @@ react简易状态管理,目前仅适用于函数式组件，支持typescript
 通过发布订阅设计模式，结合hooks的usestate来更新组件，以同步更新状态
 
 ## 暴露api
-> scheduler
+
+> createTentacle
 
 > * state 全局最新状态
 > * dispatch 调度函数
@@ -18,7 +19,9 @@ react简易状态管理,目前仅适用于函数式组件，支持typescript
 > * unSubscribe 取消订阅
 > * useTentacles 使用hooks读取全局状态
 
-> resetState
+-----
+
+> scheduler
 
 > * subscribe 订阅状态改变
 > * unSubscribe 取消订阅
