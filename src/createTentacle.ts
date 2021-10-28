@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react"
 import scheduler from "./scheduler"
-import { depthCompare } from "./utils"
+import { depthCompare, depthClone } from "./utils"
 
 type State = Record<string, unknown>
 
 function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
-	const initState: T = JSON.parse(JSON.stringify(currentState))
+	const initState: T = depthClone(currentState)
 
 	const fiber = scheduler(initState)
 
@@ -62,7 +62,7 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
 	// 恢复状态
 	function resetState() {
-		const state = JSON.parse(JSON.stringify(currentState))
+		const state = depthClone(currentState)
 		dispatch(state)
 	}
 

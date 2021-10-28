@@ -1,3 +1,5 @@
+import { depthClone } from "./utils"
+
 type Callback<T> = (state: T) => void
 
 type ListItem<T> = {
@@ -18,7 +20,7 @@ class Scheduler<T extends State, K extends keyof T>{
 	private list: ListItem<T>[] = []
 
 	constructor(state: T) {
-		this.state = Object.assign({}, state)
+		this.state = depthClone(state)
 	}
 
 	// 执行调度
