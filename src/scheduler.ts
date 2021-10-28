@@ -11,16 +11,16 @@ type State = Record<string, unknown>
 // 调度器(订阅发布中心)
 class Scheduler<T extends State, K extends keyof T>{
 
-	private state = <T>{}
+	private state: Partial<T> = {}
 
-	private list: ListItem<T>[] = []
+	private list: ListItem<Partial<T>>[] = []
 
 	constructor(state: T) {
 		this.state = state
 	}
 
 	// 执行调度
-	private handleAction(item: ListItem<T>) {
+	private handleAction(item: ListItem<Partial<T>>) {
 		// 是否有相关依赖数组
 		if(item.deps) {
 			// 判断相关依赖是否更新
@@ -38,15 +38,15 @@ class Scheduler<T extends State, K extends keyof T>{
 	}
 
 	// 触发调度任务
-	public dispatch(state: T) {
+	public dispatch(state: Partial<T>) {
 		this.state = state
 		this.triggerAction()
 	}
 
 	// 向队列添加一个调度器
-	public subscribe(callback: Callback<T>, deps?: K[]) {
-		// 给每一个订阅器创建一个唯一的名称
+	public subscribe(callback: Callback<Partial<T>>, deps?: K[]) {
 		const stamp = new Date().valueOf()
+		// 给每一个订阅器创建一个唯一的名称
 		const name = Symbol(stamp)
 		const item = {
 			name,

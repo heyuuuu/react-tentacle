@@ -5,7 +5,7 @@ react简易状态管理,目前仅适用于函数式组件，支持typescript
 应用于项目关于局部单向流复杂状态的管理
 
 ## 实现的原理
-通过发布订阅设计模式，结合hooks的usestate来更新组件，以状态的同步
+通过发布订阅设计模式，结合hooks的usestate来更新组件，以同步更新状态
 
 ## 暴露api
 > scheduler

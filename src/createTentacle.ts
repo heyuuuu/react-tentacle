@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import scheduler from "./scheduler"
+import { depthCompare } from "./utils"
 
 type State = Record<string, unknown>
 
@@ -20,8 +21,8 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 	function subscribe(callback: (state: T) => void, deps?: K[]) {
 		const handleName = fiber.subscribe(nextState => {
 			if(deps) {
-				// 浅比较状态是否一致
-				const IsOverlap = deps.find(name => JSON.stringify(nextState[name]) != JSON.stringify(initState[name]))
+				// 比较状态是否一致
+				const IsOverlap = deps.find(name => !depthCompare(nextState[name], initState[name]))
 				// 同步全局状态
 				Object.assign(initState, nextState)
 				if(IsOverlap) {
@@ -54,9 +55,7 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
 		const [state, setState] = useState(initState)
 
-		useListen(state => {
-			setState({...state})
-		}, deps)
+		useListen(state => setState({...state}), deps)
 
 		return state
 	}
