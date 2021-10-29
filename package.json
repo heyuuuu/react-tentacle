@@ -1,6 +1,6 @@
 {
   "name": "react-tentacle",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "react简易状态管理,目前仅适用于函数式组件",
   "main": "index.js",
   "scripts": {

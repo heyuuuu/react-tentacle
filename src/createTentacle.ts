@@ -61,17 +61,17 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 	}
 
 	// 恢复状态
-	function resetState() {
+	function destroy() {
 		const state = depthClone(currentState)
 		dispatch(state)
 	}
 
 	return {
 		state: initState,
+		destroy,
 		dispatch,
 		useListen,
 		subscribe,
-		resetState,
 		unSubscribe,
 		useTentacles,
 	}
