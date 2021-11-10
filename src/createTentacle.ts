@@ -56,9 +56,9 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
 		const [state, setState, currentState] = hooks.useReactives(initState, deps)
 
-		useListen(setState, deps)
+		useListen(state => setState(state), deps)
 
-		return [state, setState, currentState]
+		return [state, dispatch, currentState]
 	}
 
 	// 恢复状态
