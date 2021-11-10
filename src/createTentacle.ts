@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import scheduler from "./scheduler"
+import hooks from "./hooks"
 import { depthCompare, depthClone } from "./utils"
 
 type State = Record<string, unknown>
@@ -53,11 +54,11 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
 	function useTentacles(deps?: K[]) {
 
-		const [state, setState] = useState(initState)
+		const [state, setState, currentState] = hooks.useReactives(initState, deps)
 
-		useListen(state => setState({...state}), deps)
+		useListen(setState, deps)
 
-		return state
+		return [state, setState, currentState]
 	}
 
 	// 恢复状态
