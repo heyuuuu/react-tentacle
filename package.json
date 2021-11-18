@@ -1,9 +1,9 @@
 {
   "name": "react-tentacle",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "react简易状态管理,目前仅适用于函数式组件",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "types": "lib/types/index.d.ts",
   "scripts": {
     "build": "tsc"
   },

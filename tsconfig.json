@@ -4,11 +4,12 @@
         "module": "commonjs",
         "declaration": true,
         "outDir": "./lib",
+        "declarationDir": "./lib/types",
         "strict": true,
         "strictPropertyInitialization": false,
         "suppressImplicitAnyIndexErrors": true,
         "lib": ["ES2015","ES2016","DOM"]
     },
-    "include": ["src/*"],
+    "include": ["src/*","types/*.d.ts"],
     "exclude": ["node_modules"]
 }

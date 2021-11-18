@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import scheduler from "./scheduler"
 import hooks from "./hooks"
 import { depthCompare, depthClone } from "./utils"
