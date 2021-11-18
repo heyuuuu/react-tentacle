@@ -1,11 +1,11 @@
 import { depthClone } from "./utils"
 
-type Callback<T> = (state: T) => void
+type Callback<T> = (nextState: T, prevState: T) => void
 
 type ListItem<T> = {
 	name: symbol
 	deps?: Array<keyof T>
-	callback: Callback<T>
+	callback: Callback<Partial<T>>
 }
 
 type State = Record<string, unknown>
@@ -13,14 +13,14 @@ type State = Record<string, unknown>
 // 调度器(订阅发布中心)
 class Scheduler<T extends State, K extends keyof T>{
 
-	public state = <T>{}
+	private prevState = <T>{}
 
 	private nextState = <Partial<T>>{}
 
 	private list: ListItem<T>[] = []
 
 	constructor(state: T) {
-		this.state = depthClone(state)
+		this.nextState = depthClone(state)
 	}
 
 	// 执行调度
@@ -29,16 +29,17 @@ class Scheduler<T extends State, K extends keyof T>{
 		if(item.deps) {
 			// 判断相关依赖是否更新
 			if(item.deps.find(k => k in this.nextState)) {
-				item.callback(Object.assign(this.state, this.nextState))
+				item.callback(this.nextState, this.prevState)
 			}
 		}else {
-			item.callback(Object.assign(this.state, this.nextState))
+			item.callback(this.nextState, this.prevState)
 		}
 	}
 
 	// 处理调度任务
 	private triggerAction() {
 		this.list.forEach(item => this.handleAction(item))
+		Object.assign(this.prevState, this.nextState)
 	}
 
 	// 触发调度任务

@@ -20,21 +20,16 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 	}
 
 	function subscribe(callback: (state: T) => void, deps?: K[]) {
-		const handleName = fiber.subscribe(nextState => {
-			if(deps) {
-				// 比较状态是否一致
-				const IsOverlap = deps.find(name => !depthCompare(nextState[name], initState[name]))
-				// 同步全局状态
-				Object.assign(initState, nextState)
-				if(IsOverlap) {
-					// 通过包裹state来重新render
-					callback(initState)
-				}
-			}else {
-				Object.assign(initState, nextState)
+		const handleName = fiber.subscribe((nextState, prevState) => {
+			// 比较状态是否一致
+			const IsOverlap = deps?.find(name => !depthCompare(nextState[name], prevState[name]))
+			// 同步全局状态
+			Object.assign(initState, nextState)
+			// 是否需要同步全部状态
+			if(IsOverlap) {
+				// 通过包裹state来重新render
 				callback(initState)
 			}
-
 		}, deps)
 		return handleName
 	}
@@ -54,11 +49,11 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
 	function useTentacles(deps?: K[]) {
 
-		const [state, setState, currentState] = hooks.useReactives(initState, deps)
+		const [state, setState] = hooks.useReactives(initState)
 
 		useListen(state => setState(state), deps)
 
-		return [state, dispatch, currentState]
+		return <[T, (state: Partial<T>) => void, T]>[state, dispatch, initState]
 	}
 
 	// 恢复状态
