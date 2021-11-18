@@ -9,6 +9,6 @@
         "suppressImplicitAnyIndexErrors": true,
         "lib": ["ES2015","ES2016","DOM"]
     },
-    "include": ["src/*","types"],
+    "include": ["src/*"],
     "exclude": ["node_modules"]
 }
