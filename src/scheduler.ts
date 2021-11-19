@@ -1,4 +1,4 @@
-import { depthClone } from "./utils"
+import { depthClone, isMatch } from "./utils"
 
 type Callback<T> = (nextState: T, prevState: T) => void
 
@@ -26,12 +26,7 @@ class Scheduler<T extends State, K extends keyof T>{
 	// 执行调度
 	private handleAction(item: ListItem<T>) {
 		// 是否有相关依赖数组
-		if(item.deps) {
-			// 判断相关依赖是否更新
-			if(item.deps.find(k => k in this.nextState)) {
-				item.callback(this.nextState, this.prevState)
-			}
-		}else {
+		if(isMatch(this.nextState, item.deps)) {
 			item.callback(this.nextState, this.prevState)
 		}
 	}

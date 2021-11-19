@@ -6,12 +6,24 @@ function depthClone(value: unknown) {
 	return JSON.parse(JSON.stringify(value))
 }
 
+function isMatch<T extends OBJECT>(payload: T | ((name: CONSTANT) => boolean), deps?: CONSTANT[]) {
+	return deps? Boolean(deps.find(name => {
+		if(payload instanceof Function) {
+			return payload(name)
+		} else {
+			return payload.hasOwnProperty(name)
+		}
+	})) : true
+}
+
 export default {
+	isMatch,
 	depthClone,
 	depthCompare
 }
 
 export {
+	isMatch,
 	depthClone,
 	depthCompare
 }
