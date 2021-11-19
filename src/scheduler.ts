@@ -1,6 +1,6 @@
 import { depthClone, isMatch } from "./utils"
 
-type Callback<T> = (nextState: T, prevState: T) => void
+type Callback<T> = (nextState: T) => void
 
 type ListItem<T> = {
 	name: symbol
@@ -12,8 +12,6 @@ type State = Record<string, unknown>
 
 // 调度器(订阅发布中心)
 class Scheduler<T extends State, K extends keyof T>{
-
-	private prevState = <T>{}
 
 	private nextState = <Partial<T>>{}
 
@@ -27,14 +25,13 @@ class Scheduler<T extends State, K extends keyof T>{
 	private handleAction(item: ListItem<T>) {
 		// 是否有相关依赖数组
 		if(isMatch(this.nextState, item.deps)) {
-			item.callback(this.nextState, this.prevState)
+			item.callback(this.nextState)
 		}
 	}
 
 	// 处理调度任务
 	private triggerAction() {
 		this.list.forEach(item => this.handleAction(item))
-		Object.assign(this.prevState, this.nextState)
 	}
 
 	// 触发调度任务

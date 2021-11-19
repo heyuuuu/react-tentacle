@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import { isMatch } from "./utils"
+import { depthCompare, isMatch } from "./utils"
 
 function useReactives<T extends OBJECT>(initState: T, deps?: Array<keyof T>) {
 
@@ -8,7 +8,7 @@ function useReactives<T extends OBJECT>(initState: T, deps?: Array<keyof T>) {
 	const [state, setState] = useState(currentState.current)
 
 	const updateState = (nextState: Partial<T>) => {
-		const isUpgrade = isMatch(nextState, deps)
+		const isUpgrade = isMatch(name => !depthCompare(nextState[<string>name], state[<string>name]), deps)
 		// 同步到状态中
 		Object.assign(currentState.current, nextState)
 		// 如果依赖中存在变动，就触发状态更新

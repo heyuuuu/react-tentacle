@@ -5,32 +5,25 @@ import { depthCompare, depthClone, isMatch } from "./utils"
 
 type State = Record<string, unknown>
 
+type Callback<T> = (state: Partial<T>) => void
+
 function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 
 	const initState: T = depthClone(currentState)
 
-	const fiber = scheduler(initState)
+	const fiber = scheduler(currentState)
 
 	const dispatch = (action: Partial<T> | ((state: T) => T)) =>  {
-		if(action instanceof Function) {
-			fiber.dispatch(action(initState))
-		} else {
-			fiber.dispatch(<T>action)
-		}
+		// 处理下一个状态
+		const nextState = action instanceof Function ? action(initState) : <T>action
+		// 合并到全局副本状态中
+		Object.assign(initState, nextState)
+		// 向所有订阅者推送状态
+		fiber.dispatch(nextState)
 	}
 
-	function subscribe(callback: (state: T) => void, deps?: K[]) {
-		const handleName = fiber.subscribe((nextState, prevState) => {
-			// 比较状态是否一致
-			const IsOverlap = isMatch(name => !depthCompare(nextState[<K>name], prevState[<K>name]), deps)
-			// 同步全局状态
-			Object.assign(initState, nextState)
-			// 是否需要同步全部状态
-			if(IsOverlap) {
-				// 通过包裹state来重新render
-				callback(initState)
-			}
-		}, deps)
+	function subscribe(callback: Callback<T>, deps?: K[]) {
+		const handleName = fiber.subscribe(callback, deps)
 		return handleName
 	}
 
@@ -38,22 +31,22 @@ function createTentacle<T extends State, K extends keyof T>(currentState: T) {
 		fiber.unSubscribe(name)
 	}
 
-	function useListen(callback: (state: T) => void, deps?: K[]) {
+	function useListen(callback: Callback<T>, deps?: K[]) {
 		useEffect(() => {
 			const handleName = subscribe(callback, deps)
 			return () => {
-				fiber.unSubscribe(handleName)
+				unSubscribe(handleName)
 			}
 		}, [])
 	}
 
 	function useTentacles(deps?: K[]) {
 
-		const [state, setState] = hooks.useReactives(initState)
+		const [state, setState] = hooks.useReactives({...initState}, deps)
 
 		useListen(state => setState(state), deps)
 
-		return <[T, (state: Partial<T>) => void, T]>[state, dispatch, initState]
+		return <[T, Callback<T>, T]>[state, dispatch, initState]
 	}
 
 	// 恢复状态
