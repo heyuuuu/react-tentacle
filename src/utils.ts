@@ -6,7 +6,7 @@ function depthClone(value: unknown) {
 	return JSON.parse(JSON.stringify(value))
 }
 
-function isMatch<T extends OBJECT>(payload: T | ((name: CONSTANT) => boolean), deps?: CONSTANT[]) {
+function isMatch(payload: OBJECT | ((name: CONSTANT) => boolean), deps?: CONSTANT[]) {
 	return deps ? Boolean(deps.find(name => {
 		if(payload instanceof Function) {
 			return payload(name)

@@ -2,29 +2,31 @@ import { depthClone, isMatch } from "./utils"
 
 type Callback<T> = (nextState: T) => void
 
-type ListItem<T> = {
+type ListItem<T, K> = {
 	name: symbol
-	deps?: Array<keyof T>
-	callback: Callback<Partial<T>>
+	deps?: K
+	callback: Callback<T>
 }
 
-type State = Record<string, unknown>
-
 // 调度器(订阅发布中心)
-class Scheduler<T extends State, K extends keyof T>{
+class Scheduler<
+	T extends OBJECT,
+	P = Partial<T>,
+	K = keyof T[]
+>{
 
-	private nextState = <Partial<T>>{}
+	private nextState = <P>{}
 
-	private list: ListItem<T>[] = []
+	private list: ListItem<P, K>[] = []
 
-	constructor(state: T) {
+	constructor(state: T | P) {
 		this.nextState = depthClone(state)
 	}
 
 	// 执行调度
-	private handleAction(item: ListItem<T>) {
+	private handleAction(item: ListItem<P, K>) {
 		// 是否有相关依赖数组
-		if(isMatch(this.nextState, item.deps)) {
+		if(isMatch(<any>this.nextState, <any>item.deps)) {
 			item.callback(this.nextState)
 		}
 	}
@@ -35,13 +37,13 @@ class Scheduler<T extends State, K extends keyof T>{
 	}
 
 	// 触发调度任务
-	public dispatch(state: Partial<T>) {
+	public dispatch(state: P) {
 		this.nextState = state
 		this.triggerAction()
 	}
 
 	// 向队列添加一个调度器
-	public subscribe(callback: Callback<Partial<T>>, deps?: K[]) {
+	public subscribe(callback: Callback<P>, deps?: K) {
 		const stamp = new Date().valueOf()
 		// 给每一个订阅器创建一个唯一的名称
 		const name = Symbol(stamp)
@@ -64,6 +66,6 @@ class Scheduler<T extends State, K extends keyof T>{
 	}
 }
 
-export default function scheduler<T extends State>(state: T) {
-	return new Scheduler(state)
+export default function scheduler<T extends OBJECT, P = Partial<T>>(state: T | P) {
+	return new Scheduler<T,P>(state)
 }
