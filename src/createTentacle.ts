@@ -59,7 +59,7 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 
 		useListen(state => setState(state), deps)
 
-		return <[T, Callback<T>, T]>[state, dispatch, initState]
+		return <[T, typeof dispatch, T]>[state, dispatch, initState]
 	}
 
 	// 恢复状态(消除副作用)
