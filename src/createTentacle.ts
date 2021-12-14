@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import scheduler from "./scheduler"
 import hooks from "./hooks"
-import { depthClone } from "./utils"
+import { depthClone, replaceObject } from "./utils"
 
 type Callback<T> = (state: Partial<T>) => void
 
@@ -10,27 +10,16 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 	type P = Partial<T>
 	type K = keyof T
 
-	const initState: P = depthClone(currentState)
+	const nextState: P = depthClone(currentState)
 
 	const fiber = scheduler<T>(currentState)
 
 	const dispatch = (action: P | ((state: P) => P)) =>  {
-		// 处理下一个状态
 		if(action instanceof Function) {
-			// 下一个状态
-			const nextState = action(initState)
-			// 合并状态
-			Object.assign(initState, nextState)
-			// 替换状态
-			for(let name in initState) {
-				initState[name] = nextState[name]
-			}
-			// 向所有订阅者推送状态
-			fiber.dispatch(initState)
+			replaceObject(nextState, action(nextState))
+			fiber.dispatch(() => nextState)
 		} else {
-			// 合并到全局副本状态中
-			Object.assign(initState, action)
-			// 向所有订阅者推送状态
+			Object.assign(nextState, action)
 			fiber.dispatch(action)
 		}
 	}
@@ -55,11 +44,11 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 
 	function useTentacles(deps?: K[]) {
 
-		const [state, setState] = hooks.useReactives({...initState}, deps)
+		const [state, setState] = hooks.useReactives(nextState, deps)
 
 		useListen(state => setState(state), deps)
 
-		return <[T, typeof dispatch, T]>[state, dispatch, initState]
+		return <[T, typeof dispatch, T]>[state, dispatch, nextState]
 	}
 
 	// 恢复状态(消除副作用)
@@ -69,7 +58,7 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 	}
 
 	return {
-		state: initState,
+		state: nextState,
 		destroy,
 		dispatch,
 		useListen,

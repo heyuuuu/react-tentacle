@@ -1,4 +1,4 @@
-import { depthClone, isMatch } from "./utils"
+import { depthClone, compareDeps } from "./utils"
 
 type Callback<T> = (nextState: T) => void
 
@@ -13,11 +13,12 @@ function scheduler<T extends OBJECT>(state: Partial<T>) {
 
 	type K = keyof T
 	type P = Partial<T>
+	type S = P | (() => P)
 
 	// 数据交换
 	const DataFlow = {
 		// 下一个调度状态
-		nextState: <P>depthClone(state),
+		nextState: <P>depthClone(state) as S,
 		// 监听队列
 		list: <ListItem<P, K[]>[]>[]
 	}
@@ -25,7 +26,9 @@ function scheduler<T extends OBJECT>(state: Partial<T>) {
 	// 执行调度
 	function handleAction(item: ListItem<P, K[]>) {
 		// 是否有相关依赖数组
-		if(isMatch(DataFlow.nextState, item.deps)) {
+		if(DataFlow.nextState instanceof Function){
+			item.callback(DataFlow.nextState())
+		} else if(compareDeps(DataFlow.nextState, item.deps)) {
 			item.callback(DataFlow.nextState)
 		}
 	}
@@ -36,7 +39,7 @@ function scheduler<T extends OBJECT>(state: Partial<T>) {
 	}
 
 	// 触发调度任务
-	function dispatch(state: P) {
+	function dispatch(state: S) {
 		DataFlow.nextState = state
 		triggerAction()
 	}

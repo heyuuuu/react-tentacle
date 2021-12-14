@@ -6,29 +6,29 @@ function depthClone(value: unknown) {
 	return JSON.parse(JSON.stringify(value))
 }
 
-function isMatch<T extends OBJECT, K extends keyof T>(payload: T | ((name: K) => boolean), deps?: K[]) {
+function replaceObject<T extends OBJECT>(target: T, other: T) {
+	if(target === other) {
+		return target
+	}
+	for(let name in target) {
+		delete target[name]
+	}
+	return Object.assign(target, other)
+}
+
+function compareDeps<T extends OBJECT>(target: T, other?: T | CONSTANT[], deps?: CONSTANT[]) {
 	if(deps) {
-		const findDep = deps.find(name => {
-			if(payload instanceof Function) {
-				return payload(name)
-			} else if(name){
-				return payload.hasOwnProperty(name)
-			}
-		})
-		return Boolean(findDep)
+		return deps.find(k => !depthCompare(target[k], other![k]))
+	} else if(other instanceof Array) {
+		return other.find(k => target.hasOwnProperty(k))
 	} else {
 		return true
 	}
 }
 
-export default {
-	isMatch,
-	depthClone,
-	depthCompare
-}
-
 export {
-	isMatch,
 	depthClone,
-	depthCompare
+	depthCompare,
+	replaceObject,
+	compareDeps
 }

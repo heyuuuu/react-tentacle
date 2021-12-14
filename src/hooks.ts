@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from "react"
-import { depthCompare, isMatch } from "./utils"
+import { replaceObject, compareDeps } from "./utils"
 
 function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
 
@@ -9,29 +9,23 @@ function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyo
 	const nextState = useRef<P>(initState)
 	
 	// 记录当前状态
-	const currentState = useRef<P>(initState)
+	const middleState = useRef<P>({...initState})
 
-	const [state, setState] = useState({...initState})
-
-	// 同步备份当前状态
-	currentState.current = useMemo(() => state, [state])
+	const [state, setState] = useState(middleState.current)
 
 	const dispatch = (payload: P | ((state: P) => P)) => {
-		// 处理下一个状态值
-		const state = payload instanceof Function ? payload(nextState.current) : payload
-		// 如果传入的是函数，那么将返回全新的状态
+
 		if(payload instanceof Function) {
-			for(let name in nextState.current) {
-				delete nextState.current[name]
-			}
+			replaceObject(nextState.current, payload(nextState.current))
+		} else {
+			Object.assign(nextState.current, payload)
 		}
 		// 检测是否有依赖需要更新
-		const isUpgrade = isMatch(name => !depthCompare(state[name], currentState.current[name]), deps)
-		// 同步到状态中
-		Object.assign(nextState.current, state)
+		const isUpgrade = compareDeps(nextState.current, middleState.current, deps)
 		// 如果依赖中存在变动，就触发状态更新
 		if(isUpgrade) {
-			setState({...nextState.current})
+			middleState.current = {...nextState.current}
+			setState(middleState.current)
 		}
 	}
 
