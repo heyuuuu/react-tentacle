@@ -46,7 +46,7 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 
 		const [state, setState] = hooks.useReactives(nextState, deps)
 
-		useListen(state => setState(state), deps)
+		useListen(states => setState(() => states), deps)
 
 		return <[T, typeof dispatch, T]>[state, dispatch, nextState]
 	}
