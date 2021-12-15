@@ -9,26 +9,30 @@ type ListItem<T, K> = {
 }
 
 // 调度器(订阅发布中心)
-function scheduler<T extends OBJECT>(state: Partial<T>) {
+function scheduler<T extends OBJECT>(state: Partial<T> = {}) {
 
 	type K = keyof T
 	type P = Partial<T>
-	type S = P | (() => P)
 
 	// 数据交换
-	const DataFlow = {
-		// 下一个调度状态
-		nextState: <P>depthClone(state) as S,
-		// 监听队列
-		list: <ListItem<P, K[]>[]>[]
+	const DataFlow: {
+		nextState: P // 下一个调度状态
+		deps?: K[]
+		list: ListItem<P, K[]>[] // 监听队列
+	} = {
+		nextState: depthClone(state),
+		list: []
 	}
 
 	// 执行调度
 	function handleAction(item: ListItem<P, K[]>) {
 		// 是否有相关依赖数组
-		if(DataFlow.nextState instanceof Function){
-			item.callback(DataFlow.nextState())
-		} else if(compareDeps(DataFlow.nextState, item.deps)) {
+		if(item.deps && DataFlow.deps) {
+			const matchDeps = item.deps.find(name => DataFlow.deps!.indexOf(name) > -1)
+			if(matchDeps) {
+				item.callback(DataFlow.nextState)
+			}
+		} else {
 			item.callback(DataFlow.nextState)
 		}
 	}
@@ -39,8 +43,9 @@ function scheduler<T extends OBJECT>(state: Partial<T>) {
 	}
 
 	// 触发调度任务
-	function dispatch(state: S) {
+	function dispatch(state: P, deps?: K[]) {
 		DataFlow.nextState = state
+		DataFlow.deps = deps
 		triggerAction()
 	}
 

@@ -17,10 +17,10 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 	const dispatch = (action: P | ((state: P) => P)) =>  {
 		if(action instanceof Function) {
 			replaceObject(nextState, action(nextState))
-			fiber.dispatch(() => nextState)
+			fiber.dispatch(nextState)
 		} else {
 			Object.assign(nextState, action)
-			fiber.dispatch(action)
+			fiber.dispatch(nextState, Object.keys(action))
 		}
 	}
 
