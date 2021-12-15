@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useMemo } from "react"
-import { replaceObject, compareDeps } from "./utils"
+import { useState, useRef } from "react"
+import { replaceObject, compareDeps } from "../utils"
 
 function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
 
@@ -32,6 +32,4 @@ function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyo
 	return <[T, typeof dispatch, T]>[state, dispatch, nextState.current]
 }
 
-export default {
-	useReactives
-}
+export default useReactives
