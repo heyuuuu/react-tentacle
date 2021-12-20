@@ -1,7 +1,7 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import scheduler from "./scheduler"
 import hooks from "./hooks"
-import { depthClone, replaceObject } from "./utils"
+import { depthClone, replaceObject, compareDeps } from "./utils"
 
 type Callback<T> = (state: Partial<T>) => void
 
@@ -34,8 +34,17 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 	}
 
 	function useListen(callback: Callback<P>, deps?: K[]) {
+		const prevState = useRef({})
 		useEffect(() => {
-			const handleName = subscribe(callback, deps)
+			const handleName = subscribe(nextState => {
+				// 深比较上一次状态与下一次状态
+				const IsUpdate = deps ? compareDeps(prevState.current, nextState, deps) : true
+				// 判断当前状态是否需要更新
+				if(IsUpdate) {
+					prevState.current = depthClone(nextState)
+					callback(nextState)
+				}
+			}, deps)
 			return () => {
 				unSubscribe(handleName)
 			}

@@ -1,6 +1,6 @@
 import { useLayoutEffect , useEffect, useState } from "react"
 
-function useAnimation(before: string | string[], after: string | string[], visible: boolean) {
+function useAnimation(before: string | string[], after: string | string[], visible?: boolean) {
 
     const [dynamicStyles, setDynamicStyles] = useState(before)
 
