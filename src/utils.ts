@@ -3,22 +3,18 @@ function depthCompare(value: unknown,otherValue: unknown) {
 }
 
 function depthClone<T = unknown>(value: T): T {
+	// 可以使用简易的递归进行优化
 	return JSON.parse(JSON.stringify(value))
 }
 
 function replaceObject<T extends OBJECT>(target: T, other: T) {
 	if(target === other) {
 		return target
-	} else {
-		const cloneOther = depthClone(other)
-		for(let name in target) {
-			delete target[name]
-		}
-		for(let name in cloneOther) {
-			target[name] = cloneOther[name]
-		}
-		return target
 	}
+	for(let name in target) {
+		delete target[name]
+	}
+	return Object.assign(target, other)
 }
 
 function compareDeps<T extends OBJECT>(target: T, other?: T | CONSTANT[], deps?: CONSTANT[]) {

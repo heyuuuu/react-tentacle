@@ -38,7 +38,7 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 		useEffect(() => {
 			const handleName = subscribe(nextState => {
 				// 深比较上一次状态与下一次状态
-				const IsUpdate = deps ? compareDeps(prevState.current, nextState, deps) : true
+				const IsUpdate = compareDeps(prevState.current, nextState, deps)
 				// 判断当前状态是否需要更新
 				if(IsUpdate) {
 					prevState.current = depthClone(nextState)
