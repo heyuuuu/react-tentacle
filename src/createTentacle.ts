@@ -20,12 +20,12 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 			fiber.dispatch(nextState)
 		} else {
 			Object.assign(nextState, action)
-			fiber.dispatch(nextState, Object.keys(action))
+			fiber.dispatch(nextState)
 		}
 	}
 
 	function subscribe(callback: Callback<T>, deps?: K[]) {
-		const handleName = fiber.subscribe(callback, deps)
+		const handleName = fiber.subscribe(callback, { deps })
 		return handleName
 	}
 
@@ -34,17 +34,8 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 	}
 
 	function useListen(callback: Callback<P>, deps?: K[]) {
-		const prevState = useRef({})
 		useEffect(() => {
-			const handleName = subscribe(nextState => {
-				// 深比较上一次状态与下一次状态
-				const IsUpdate = compareDeps(prevState.current, nextState, deps)
-				// 判断当前状态是否需要更新
-				if(IsUpdate) {
-					prevState.current = depthClone(nextState)
-					callback(nextState)
-				}
-			}, deps)
+			const handleName = subscribe(callback, deps)
 			return () => {
 				unSubscribe(handleName)
 			}
