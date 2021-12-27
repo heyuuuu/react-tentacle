@@ -5,9 +5,7 @@ function useAnimation(before: string | string[], after: string | string[], visib
     const [dynamicStyles, setDynamicStyles] = useState(before)
 
     useLayoutEffect(() => {
-        return () => {
-            setDynamicStyles(before)
-        }
+        setDynamicStyles(before)
     }, [visible])
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import { replaceObject, compareDeps } from "../utils"
+import { replaceObject, compareDeps, depthClone } from "../utils"
 
 function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
 
@@ -24,12 +24,14 @@ function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyo
 		const isUpgrade = compareDeps(nextState.current, middleState.current, deps)
 		// 如果依赖中存在变动，就触发状态更新
 		if(isUpgrade) {
-			middleState.current = {...nextState.current}
-			setState(middleState.current)
+			middleState.current = depthClone(nextState.current)
+			setState({...nextState.current})
+		} else {
+			replaceObject(state, nextState.current)
 		}
 	}
 
-	return <[T, typeof dispatch, T]>[state, dispatch, nextState.current]
+	return [state, dispatch, nextState.current] as [T, typeof dispatch,T]
 }
 
 export default useReactives
