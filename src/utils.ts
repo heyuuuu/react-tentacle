@@ -1,3 +1,5 @@
+/// <reference path="../types/types.d.ts" />
+
 function depthCompare(value: unknown,otherValue: unknown) {
 	return JSON.stringify(value) == JSON.stringify(otherValue)
 }

@@ -1,3 +1,5 @@
+/// <reference path="../types/types.d.ts" />
+
 import { useEffect } from "react"
 import scheduler from "./scheduler"
 import hooks from "./hooks"
@@ -21,7 +23,7 @@ function createTentacle<T extends Tentacle.OBJECT>(currentState: Partial<T>) {
 		fiber.dispatch(nextState)
 	}
 
-	function subscribe(callback: Callback<T>, deps?: K[]) {
+	function subscribe(callback: Callback<P>, deps?: K[]) {
 		const handleName = fiber.subscribe(callback, { deps })
 		return handleName
 	}

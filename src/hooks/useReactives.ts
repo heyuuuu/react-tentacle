@@ -1,3 +1,5 @@
+/// <reference path="../../types/types.d.ts" />
+
 import { useState, useRef } from "react"
 import { replaceObject, compareDeps, depthClone, mixState } from "../utils"
 

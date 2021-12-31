@@ -1,3 +1,5 @@
+/// <reference path="../types/types.d.ts" />
+
 import { depthClone, compareDeps, mixState } from "./utils"
 
 type Callback<T> = (nextState: T) => void
