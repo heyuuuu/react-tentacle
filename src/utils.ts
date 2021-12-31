@@ -7,7 +7,7 @@ function depthClone<T = unknown>(value: T): T {
 	return JSON.parse(JSON.stringify(value))
 }
 
-function replaceObject<T extends OBJECT>(target: T, other: T) {
+function replaceObject<T extends Tentacle.OBJECT>(target: T, other: T) {
 	if(target === other) {
 		return target
 	}
@@ -17,7 +17,7 @@ function replaceObject<T extends OBJECT>(target: T, other: T) {
 	return Object.assign(target, other)
 }
 
-function compareDeps<T extends OBJECT>(target: T, other?: T | CONSTANT[], deps?: CONSTANT[]) {
+function compareDeps<T extends Tentacle.OBJECT>(target: T, other?: T | Tentacle.CONSTANT[], deps?: Tentacle.CONSTANT[]) {
 	if(deps) {
 		return deps.find(k => !depthCompare(target[k], other![k]))
 	} else if(other instanceof Array) {
@@ -27,7 +27,7 @@ function compareDeps<T extends OBJECT>(target: T, other?: T | CONSTANT[], deps?:
 	}
 }
 
-function mixState<T extends OBJECT>(target: T, payload: MixState<T>) {
+function mixState<T extends Tentacle.OBJECT>(target: T, payload: Tentacle.MixState<T>) {
 	if(payload instanceof Function) {
 		replaceObject(target, payload(target))
 	} else {

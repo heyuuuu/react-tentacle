@@ -1,7 +1,9 @@
-declare type CONSTANT = string | number | symbol
+declare namespace Tentacle {
+	type CONSTANT = string | number | symbol
 
-declare interface OBJECT<T = unknown> {
-	[name: CONSTANT]: T
+	interface OBJECT<T = unknown> {
+		[name: CONSTANT]: T
+	}
+	
+	type MixState<P> = P | ((state: P) => P)
 }
-
-declare type MixState<P> = P | ((state: P) => P)

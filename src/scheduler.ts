@@ -14,7 +14,7 @@ type ListItem<P, K> = {
 }
 
 // 调度器(订阅发布中心)
-function scheduler<T extends OBJECT>(state: Partial<T> = {}) {
+function scheduler<T extends Tentacle.OBJECT>(state: Partial<T> = {}) {
 
 	type K = keyof T
 	type P = Partial<T>
@@ -50,7 +50,7 @@ function scheduler<T extends OBJECT>(state: Partial<T> = {}) {
 	}
 
 	// 触发调度任务
-	function dispatch(state: MixState<P>) {
+	function dispatch(state: Tentacle.MixState<P>) {
 		mixState(DataFlow.nextState, state)
 		triggerAction()
 	}

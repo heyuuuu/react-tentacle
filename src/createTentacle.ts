@@ -5,7 +5,7 @@ import { depthClone, mixState } from "./utils"
 
 type Callback<T> = (state: Partial<T>) => void
 
-function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
+function createTentacle<T extends Tentacle.OBJECT>(currentState: Partial<T>) {
 
 	type P = Partial<T>
 	type K = keyof T
@@ -16,7 +16,7 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 
 	const fiber = scheduler<T>(nextState)
 
-	const dispatch = (action: MixState<P>) =>  {
+	const dispatch = (action: Tentacle.MixState<P>) =>  {
 		mixState(nextState, action)
 		fiber.dispatch(nextState)
 	}

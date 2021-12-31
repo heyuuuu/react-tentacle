@@ -1,7 +1,7 @@
 import { useState, useRef } from "react"
 import { replaceObject, compareDeps, depthClone, mixState } from "../utils"
 
-function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
+function useReactives<T extends Tentacle.OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
 
 	type P = Partial<T>
 
@@ -13,7 +13,7 @@ function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyo
 
 	const [state, setState] = useState(middleState.current)
 
-	const dispatch = (payload: MixState<P>) => {
+	const dispatch = (payload: Tentacle.MixState<P>) => {
 		
 		mixState(nextState.current, payload)
 
