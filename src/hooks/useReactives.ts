@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import { replaceObject, compareDeps, depthClone } from "../utils"
+import { replaceObject, compareDeps, depthClone, mixState } from "../utils"
 
 function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
 
@@ -13,13 +13,10 @@ function useReactives<T extends OBJECT>(initState: Partial<T>, deps?: Array<keyo
 
 	const [state, setState] = useState(middleState.current)
 
-	const dispatch = (payload: P | ((state: P) => P)) => {
+	const dispatch = (payload: MixState<P>) => {
+		
+		mixState(nextState.current, payload)
 
-		if(payload instanceof Function) {
-			replaceObject(nextState.current, payload(nextState.current))
-		} else {
-			Object.assign(nextState.current, payload)
-		}
 		// 检测是否有依赖需要更新
 		const isUpgrade = compareDeps(nextState.current, middleState.current, deps)
 		// 如果依赖中存在变动，就触发状态更新

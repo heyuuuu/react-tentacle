@@ -27,9 +27,21 @@ function compareDeps<T extends OBJECT>(target: T, other?: T | CONSTANT[], deps?:
 	}
 }
 
+function mixState<T extends OBJECT>(target: T, payload: MixState<T>) {
+	if(payload instanceof Function) {
+		replaceObject(target, payload(target))
+	} else {
+		if(target !== payload){
+			Object.assign(target, payload)
+		}
+	}
+	return target
+}
+
 export {
 	depthClone,
 	depthCompare,
 	replaceObject,
-	compareDeps
+	compareDeps,
+	mixState
 }

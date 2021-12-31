@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import scheduler from "./scheduler"
 import hooks from "./hooks"
-import { depthClone, replaceObject, compareDeps } from "./utils"
+import { depthClone, mixState } from "./utils"
 
 type Callback<T> = (state: Partial<T>) => void
 
@@ -10,18 +10,15 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 	type P = Partial<T>
 	type K = keyof T
 
-	const nextState: P = depthClone(currentState)
+	const initState: P = depthClone(currentState)
 
-	const fiber = scheduler<T>(currentState)
+	const nextState: P = currentState
 
-	const dispatch = (action: P | ((state: P) => P)) =>  {
-		if(action instanceof Function) {
-			replaceObject(nextState, action(nextState))
-			fiber.dispatch(nextState)
-		} else {
-			Object.assign(nextState, action)
-			fiber.dispatch(nextState)
-		}
+	const fiber = scheduler<T>(nextState)
+
+	const dispatch = (action: MixState<P>) =>  {
+		mixState(nextState, action)
+		fiber.dispatch(nextState)
 	}
 
 	function subscribe(callback: Callback<T>, deps?: K[]) {
@@ -44,17 +41,16 @@ function createTentacle<T extends OBJECT>(currentState: Partial<T>) {
 
 	function useTentacles(deps?: K[]) {
 
-		const [state, setState] = hooks.useReactives(nextState, deps)
+		const [state, setState] = hooks.useReactives(nextState)
 
 		useListen(states => setState(() => states), deps)
 
-		return <[T, typeof dispatch, T]>[state, dispatch, nextState]
+		return [state, dispatch, nextState] as [T, typeof dispatch, T]
 	}
 
 	// 恢复状态(消除副作用)
 	function destroy() {
-		const state = depthClone(currentState)
-		dispatch(() => state)
+		dispatch(() => depthClone(initState))
 	}
 
 	return {

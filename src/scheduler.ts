@@ -1,4 +1,4 @@
-import { depthClone, compareDeps } from "./utils"
+import { depthClone, compareDeps, mixState } from "./utils"
 
 type Callback<T> = (nextState: T) => void
 
@@ -25,7 +25,7 @@ function scheduler<T extends OBJECT>(state: Partial<T> = {}) {
 		nextState: P // 下一个调度状态
 		list: Item[] // 监听队列
 	} = {
-		nextState: depthClone(state),
+		nextState: state,
 		list: []
 	}
 
@@ -36,7 +36,7 @@ function scheduler<T extends OBJECT>(state: Partial<T> = {}) {
 		if(options?.deps) {
 			const IsChange = compareDeps(prveState, DataFlow.nextState, options.deps)
 			if(IsChange) {
-				item.prveState = DataFlow.nextState
+				item.prveState = depthClone(DataFlow.nextState)
 				callback(item.prveState)
 			}
 		} else {
@@ -50,8 +50,8 @@ function scheduler<T extends OBJECT>(state: Partial<T> = {}) {
 	}
 
 	// 触发调度任务
-	function dispatch(state: P) {
-		DataFlow.nextState = depthClone(state)
+	function dispatch(state: MixState<P>) {
+		mixState(DataFlow.nextState, state)
 		triggerAction()
 	}
 
