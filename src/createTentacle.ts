@@ -43,11 +43,11 @@ function createTentacle<T extends Tentacle.OBJECT>(currentState: Partial<T>) {
 
 	function useTentacles(deps?: K[]) {
 
-		const [state, setState] = hooks.useReactives(nextState)
+		const [state, setState, linkState] = hooks.useReactives(nextState)
 
-		useListen(states => setState(() => states), deps)
+		useListen(nextState => setState(() => nextState), deps)
 
-		return [state, dispatch, nextState] as [T, typeof dispatch, T]
+		return [state, dispatch, linkState] as [T, typeof dispatch, T]
 	}
 
 	// 恢复状态(消除副作用)
