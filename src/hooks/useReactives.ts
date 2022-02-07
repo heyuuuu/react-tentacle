@@ -1,39 +1,37 @@
 /// <reference path="../../types/types.d.ts" />
 
-import { useState, useMemo, useRef } from "react"
+import { useState, useRef } from "react"
 import { compareDeps, depthClone, mixState, replaceObject } from "../utils"
 
 function useReactives<T extends Tentacle.OBJECT>(initState: Partial<T>, deps?: Array<keyof T>) {
 
 	type P = Partial<T>
 
-	// 记录当前状态
-	const currentState = useRef<Partial<T>>({})
+	// 上一次状态
+	const prveState = useRef<Partial<T>>({...initState})
+	
+	// 当前状态
+	const currentState = useRef<Partial<T>>(initState)
 
-	const linkState = useMemo(() => {
-		currentState.current = depthClone(initState)
-		return initState
-	}, [])
-
-	const [state, setState] = useState(linkState)
+	const [state, setState] = useState(initState)
 
 	const dispatch = (payload: Tentacle.MixState<P>) => {
 		
-		mixState(state, payload)
+		mixState(currentState.current, payload)
 
 		// 检测是否有依赖需要更新
-		const isUpgrade = compareDeps(state, currentState.current, deps)
+		const isUpgrade = compareDeps(state, prveState.current, deps)
 
-		replaceObject(linkState, state)
+		replaceObject(state, currentState.current)
 
 		// 如果依赖中存在变动，就触发状态更新
 		if(isUpgrade) {
-			currentState.current = depthClone(state)
-			setState({...state})
+			prveState.current = depthClone(currentState.current)
+			setState(prveState.current)
 		}
 	}
 
-	return [state, dispatch, linkState] as [T, typeof dispatch,T]
+	return [state, dispatch, currentState.current] as [T, typeof dispatch,T]
 }
 
 export default useReactives
