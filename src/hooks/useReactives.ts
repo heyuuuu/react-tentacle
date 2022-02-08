@@ -7,11 +7,11 @@ function useReactives<T extends Tentacle.OBJECT>(initState: Partial<T>, deps?: A
 
 	type P = Partial<T>
 
+	// 最新状态
+	const currentState = useRef<Partial<T>>({...initState})
+
 	// 上一次状态
-	const prveState = useRef<Partial<T>>({...initState})
-	
-	// 当前状态
-	const currentState = useRef<Partial<T>>(initState)
+	const prveState = useRef<Partial<T>>(initState)
 
 	const [state, setState] = useState(initState)
 
@@ -20,14 +20,14 @@ function useReactives<T extends Tentacle.OBJECT>(initState: Partial<T>, deps?: A
 		mixState(currentState.current, payload)
 
 		// 检测是否有依赖需要更新
-		const isUpgrade = compareDeps(state, prveState.current, deps)
+		const isUpgrade = compareDeps(currentState.current, prveState.current, deps)
 
 		replaceObject(state, currentState.current)
 
 		// 如果依赖中存在变动，就触发状态更新
 		if(isUpgrade) {
 			prveState.current = depthClone(currentState.current)
-			setState(prveState.current)
+			setState({...state})
 		}
 	}
 

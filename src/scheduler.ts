@@ -39,7 +39,7 @@ function scheduler<T extends Tentacle.OBJECT>(state: Partial<T> = {}) {
 			const IsChange = compareDeps(prveState, DataFlow.nextState, options.deps)
 			if(IsChange) {
 				item.prveState = depthClone(DataFlow.nextState)
-				callback(item.prveState)
+				callback(DataFlow.nextState)
 			}
 		} else {
 			callback(DataFlow.nextState)
