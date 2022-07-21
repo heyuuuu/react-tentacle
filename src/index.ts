@@ -1,15 +1,11 @@
-import "core-js/es/object"
-import "core-js/es/symbol"
-import "core-js/es/array"
+/// <reference path="../types/types.d.ts" />
 
-import createTentacle from "./createTentacle"
-import scheduler from "./scheduler"
-import hooks from "./hooks"
+import tentacle from "./tentacle"
+import observer from "./observer"
+import immutable from "./immutable"
 
 export {
-	hooks,
-	scheduler,
-	createTentacle
+	tentacle,
+	observer,
+	immutable
 }
-
-export default createTentacle
