@@ -6,20 +6,25 @@ react分散型状态管理
 
 ## 暴露api
 
-> createTentacle
+> tentacle
 
 > * state 全局最新状态
-> * destroy 销毁并重置全局状态至初始值
 > * dispatch 调度函数
-> * useListen 监听状态改变
-> * subscribe 订阅状态改变
-> * unSubscribe 取消订阅
-> * useTentacles 使用hooks读取全局状态
+> * useTentacle 使用状态
+> * useReduceTentacle 还原或初始化状态，置于顶层使用
 
 -----
 
-> scheduler
+> observer
 
-> * subscribe 订阅状态改变
-> * unSubscribe 取消订阅
+> * listen 订阅状态
+> * destroy 取消订阅
 > * dispatch 发布状态
+
+-----
+
+> immutable 对象突变
+
+> * clear 删除某个属性或所有属性
+> * setting 设置属性
+> * keepData 对象唯一性
