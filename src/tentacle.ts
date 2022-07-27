@@ -21,7 +21,7 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 		const name = Symbol("useTentacle")
 		Observer.listen( prev => {
 			if(deps) {
-				const IsUnequal = deps.some(name => String(prev[name]) != String(state[name]))
+				const IsUnequal = deps.some(name => JSON.stringify(prev[name]) != JSON.stringify(state[name]))
 				IsUnequal && callback(state)
 			} else {
 				callback(state)
