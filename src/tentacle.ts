@@ -42,15 +42,18 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 			const name = listen(() => forceUpdate(Symbol("forceUpdate")), deps)
 			return () => Observer.destroy(name)
 		}, [])
-		return [state, dispatch, forceUpdate]
+		return [state, dispatch]
 	}
 	// 还原触角状态
 	const useReduceTentacle = () => {
 		useMemo(() => dispatch(() => initState), [])
 	}
 
+	const insert = Immutable.setting
+
 	return {
 		state,
+		insert,
 		dispatch,
 		useTentacle,
 		useReduceTentacle
