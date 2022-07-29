@@ -21,7 +21,7 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 		const name = Symbol("useTentacle")
 		Observer.listen( prev => {
 			if(deps) {
-				const IsUnequal = deps.some(name => JSON.stringify(prev[name]) != JSON.stringify(state[name]))
+				const IsUnequal = deps.some(dep => JSON.stringify(prev[dep]) != JSON.stringify(state[dep]))
 				IsUnequal && callback(state)
 			} else {
 				callback(state)
@@ -35,13 +35,17 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 		Immutable.setting(data)
 		Observer.dispatch(snapshot)
 	}
+	// 监听状态改变
+	const useListen = (callback: (state: T) => void, deps?: K[]) => {
+		useEffect(() => {
+			const name = listen(callback, deps)
+			return () => Observer.destroy(name)
+		}, [])
+	}
 	// 使用触角
 	const useTentacle = (deps?: K[]) => {
 		const [,forceUpdate] = useState<symbol>()
-		useEffect(() => {
-			const name = listen(() => forceUpdate(Symbol("forceUpdate")), deps)
-			return () => Observer.destroy(name)
-		}, [])
+		useListen(() => forceUpdate(Symbol("forceUpdate")), deps)
 		return [state, dispatch]
 	}
 	// 还原触角状态
@@ -56,6 +60,7 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 		insert,
 		listen,
 		dispatch,
+		useListen,
 		useTentacle,
 		useInitTentacle
 	}
