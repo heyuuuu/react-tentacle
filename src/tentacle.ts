@@ -45,7 +45,7 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 		return [state, dispatch]
 	}
 	// 还原触角状态
-	const useReduceTentacle = () => {
+	const useInitTentacle = () => {
 		useMemo(() => dispatch(() => initState), [])
 	}
 
@@ -54,9 +54,10 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 	return {
 		state,
 		insert,
+		listen,
 		dispatch,
 		useTentacle,
-		useReduceTentacle
+		useInitTentacle
 	}
 }
 
