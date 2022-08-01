@@ -49,8 +49,14 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 		return [state, dispatch] as [typeof state, typeof dispatch]
 	}
 	// 还原触角状态
-	const useInitTentacle = () => {
-		useMemo(() => dispatch(() => initState), [])
+	const useInitTentacle = (IsDynamicUpdate?: boolean) => {
+		useMemo(() => {
+			if(IsDynamicUpdate) {
+				dispatch(() => initState)
+			} else {
+				Immutable.setting(() => initState)
+			}
+		}, [])
 	}
 
 	const insert = Immutable.setting
