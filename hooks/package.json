@@ -1,0 +1,4 @@
+{
+    "main": "../lib/hooks.js",
+    "types": "../lib/types/hooks.d.ts"
+}

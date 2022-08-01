@@ -1,4 +1,4 @@
-function immutable<T extends Tentacle.Object>(keepData = {} as T) {
+function immutable<T extends Tentacle.Object>(keepData: T) {
 	const clear = (name?: (keyof T)[]) => {
 		if(name) {
 			name.forEach(k => delete keepData[k])

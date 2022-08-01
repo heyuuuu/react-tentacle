@@ -10,6 +10,6 @@
         "suppressImplicitAnyIndexErrors": true,
         "lib": ["ES2015","ES2016","DOM"]
     },
-    "files": ["src/index.ts"],
+    "files": ["src/index.ts", "src/hooks.ts"],
     "exclude": ["node_modules"]
 }

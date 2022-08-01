@@ -2,16 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import immutable from "./immutable";
 import observer from "./observer";
 
-function clone<T extends Tentacle.Object>(data: T) {
+function clone<T extends Tentacle.Object>(data: T): T {
 	return JSON.parse(JSON.stringify(data))
 }
 
-function tentacle<T extends Tentacle.Object>(initState: T) {
+function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 
 	type K = keyof T
 
 	// 克隆初始值
-	const state = clone(initState)
+	const state = clone(initState as T)
 	// 创建对象突变
 	const Immutable = immutable(state)
 	// 创建监听
@@ -46,7 +46,7 @@ function tentacle<T extends Tentacle.Object>(initState: T) {
 	const useTentacle = (deps?: K[]) => {
 		const [,forceUpdate] = useState<symbol>()
 		useListen(() => forceUpdate(Symbol("forceUpdate")), deps)
-		return [state, dispatch]
+		return [state, dispatch] as [typeof state, typeof dispatch]
 	}
 	// 还原触角状态
 	const useInitTentacle = () => {
