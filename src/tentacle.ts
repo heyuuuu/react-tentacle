@@ -13,7 +13,7 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 	// 克隆初始值
 	const state = clone(initState as T)
 	// 创建对象突变
-	const Immutable = immutable(state)
+	const { setting:insert } = immutable(state)
 	// 创建监听
 	const Observer = observer<T, symbol>()
 	// 监听改变
@@ -32,7 +32,7 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 	// 派遣使用对象
 	const dispatch = (data: Partial<T> | ((data: T) => Partial<T>)) => {
 		const snapshot = clone(state)
-		Immutable.setting(data)
+		insert(data)
 		Observer.dispatch(snapshot)
 	}
 	// 监听状态改变
@@ -46,7 +46,7 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 	const useTentacle = (deps?: K[]) => {
 		const [,forceUpdate] = useState<symbol>()
 		useListen(() => forceUpdate(Symbol("forceUpdate")), deps)
-		return [state, dispatch] as [typeof state, typeof dispatch]
+		return [state, dispatch, insert] as [typeof state, typeof dispatch, typeof insert]
 	}
 	// 还原触角状态
 	const useInitTentacle = (IsDynamicUpdate?: boolean) => {
@@ -54,12 +54,10 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 			if(IsDynamicUpdate) {
 				dispatch(() => initState)
 			} else {
-				Immutable.setting(() => initState)
+				insert(() => initState)
 			}
 		}, [])
 	}
-
-	const insert = Immutable.setting
 
 	return {
 		state,
