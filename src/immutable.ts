@@ -1,27 +1,27 @@
-function immutable<T extends Tentacle.Object>(keepData: T) {
-	const clear = (name?: (keyof T)[]) => {
+function immutable<T extends Tentacle.Object>(state: T) {
+	const clean = (name?: (keyof T)[]) => {
 		if(name) {
-			name.forEach(k => delete keepData[k])
+			name.forEach(k => delete state[k])
 		} else {
-			Object.keys(keepData).forEach(k => delete keepData[k])
+			Object.keys(state).forEach(k => delete state[k])
 		}
 	}
-	const setting = (payload: Partial<T> | ((data: T) => Partial<T>)) => {
+	const mutation = (payload: Partial<T> | ((data: T) => Partial<T>)) => {
 		if(payload instanceof Function) {
-			const next = payload(keepData)
-			if(next !== keepData) {
-				clear()
-				Object.assign(keepData, next)
+			const next = payload(state)
+			if(next !== state) {
+				clean()
+				Object.assign(state, next)
 			}
 		} else {
-			Object.assign(keepData, payload)
+			Object.assign(state, payload)
 		}
-		return keepData
+		return state
 	}
 	return {
-		clear,
-		setting,
-		keepData
+		state,
+		clean,
+		mutation
 	}
 }
 

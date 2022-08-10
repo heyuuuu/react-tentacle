@@ -3,19 +3,31 @@
 import { useMemo, useState } from "react"
 import immutable from "./immutable"
 
+export function useForceUpdate() {
+    const [ seal, setSeal] = useState<symbol>()
+    const forceUpdate = () => setSeal(Symbol("forceUpdate"))
+    return [forceUpdate, seal] as [typeof forceUpdate, typeof seal]
+}
+
 export function useReactives<T extends Tentacle.Object>(state: Partial<T>, deps?: (keyof T)[]) {
-    const { setting, keepData } = useMemo(() => immutable(state as T), [])
-    const [, forceUpdate] = useState<symbol>()
-    const dispatch = (payload: ((state: T) => Partial<T>) | Partial<T>) => {
+    const { mutation, state: raw } = useMemo(() => immutable(state as T), [])
+    const [ forceUpdate, seal ] = useForceUpdate()
+    const reactive = (payload: ((state: T) => Partial<T>) | Partial<T>) => {
         if(deps) {
-            const prev = JSON.parse(JSON.stringify(keepData))
-            setting(payload)
-            const IsUnequal = deps.some(dep => JSON.stringify(prev[dep]) != JSON.stringify(keepData[dep]))
-            IsUnequal && forceUpdate(Symbol("useReactives"))
+            const prev = JSON.parse(JSON.stringify(raw))
+            mutation(payload)
+            const IsUnequal = deps.some(dep => JSON.stringify(prev[dep]) != JSON.stringify(raw[dep]))
+            IsUnequal && forceUpdate()
         } else {
-            setting(payload)
-            forceUpdate(Symbol("useReactives"))
+            mutation(payload)
+            forceUpdate()
         }
     }
-    return [keepData, dispatch, setting] as [typeof keepData, typeof dispatch, typeof setting]
+    return {
+        seal,
+        state,
+        reactive,
+        mutation,
+        forceUpdate
+    }
 }
