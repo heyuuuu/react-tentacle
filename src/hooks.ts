@@ -1,33 +1,30 @@
 /// <reference path="../types/types.d.ts" />
 
 import { useMemo, useState } from "react"
+import cloneDeep from "lodash.clonedeep"
+import isEqual from "lodash.isequal"
 import immutable from "./immutable"
 
-export function useForceUpdate() {
-    const [ seal, setSeal] = useState<symbol>()
-    const forceUpdate = () => setSeal(Symbol("forceUpdate"))
-    return [forceUpdate, seal] as [typeof forceUpdate, typeof seal]
-}
-
-export function useReactives<T extends Tentacle.Object>(state: Partial<T>, deps?: (keyof T)[]) {
-    const { mutation, state: raw } = useMemo(() => immutable(state as T), [])
-    const [ forceUpdate, seal ] = useForceUpdate()
+export function useReactives<T extends Tentacle.Object>(raw: Partial<T>, deps?: (keyof T)[]) {
+    const { mutation } = useMemo(() => immutable(raw as T), [])
+    const [state, setState] = useState(() => cloneDeep(raw))
+    const reaction = () => setState(cloneDeep(raw))
     const reactive = (payload: ((state: T) => Partial<T>) | Partial<T>) => {
         if(deps) {
-            const prev = JSON.parse(JSON.stringify(raw))
+            const snapshot = cloneDeep(raw)
             mutation(payload)
-            const IsUnequal = deps.some(dep => JSON.stringify(prev[dep]) != JSON.stringify(raw[dep]))
-            IsUnequal && forceUpdate()
+            const IsUnequal = deps.some(dep => !isEqual(snapshot[dep], raw[dep]))
+            IsUnequal && reaction()
         } else {
             mutation(payload)
-            forceUpdate()
+            reaction()
         }
     }
     return {
-        seal,
+        raw,
         state,
-        reactive,
         mutation,
-        forceUpdate
+        reaction,
+        reactive,
     }
 }
