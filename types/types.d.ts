@@ -1,3 +1,4 @@
 declare namespace Tentacle {
-	type Object = Record<string | number | symbol, unknown>
+	type CONSTANT = string | number | symbol
+	type OBJECT = Record<CONSTANT, unknown>
 }

@@ -5,7 +5,7 @@ import isEqual from "lodash.isequal"
 import cloneDeep from "lodash.clonedeep"
 import { useReactives } from "./hooks"
 
-function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
+function tentacle<T extends Tentacle.OBJECT>(initState: Partial<T>) {
 
 	type K = keyof T
 
@@ -17,7 +17,7 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 	const Observer = observer<T, symbol>()
 	// 监听改变
 	const listen = (callback: (state: T) => void, deps?: K[]) => {
-		const name = Symbol("useTentacle")
+		const name = Symbol("listen")
 		Observer.listen(oldState => {
 			if(deps) {
 				const IsUnequal = deps.some(dep => !isEqual(oldState[dep], state[dep]))
@@ -26,7 +26,7 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 				callback(state)
 			}
 		}, name)
-		return name
+		return () => Observer.destroy(name)
 	}
 	// 改变属性并触发反应
 	const reactive = (data: Partial<T> | ((data: T) => Partial<T>)) => {
@@ -36,10 +36,7 @@ function tentacle<T extends Tentacle.Object>(initState: Partial<T>) {
 	}
 	// 监听状态改变
 	const useListen = (callback: (state: T) => void, deps?: K[]) => {
-		useEffect(() => {
-			const name = listen(callback, deps)
-			return () => Observer.destroy(name)
-		}, [])
+		useEffect(() => listen(callback, deps), [])
 	}
 	// 使用触角
 	const useTentacle = (deps?: K[]) => {

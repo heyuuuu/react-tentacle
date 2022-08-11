@@ -1,4 +1,4 @@
-function immutable<T extends Tentacle.Object>(state: T) {
+function immutable<T extends Tentacle.OBJECT>(state: T) {
 	const clean = (name?: (keyof T)[]) => {
 		if(name) {
 			name.forEach(k => delete state[k])

@@ -1,4 +1,4 @@
-function observer<T, P>() {
+function observer<T, P extends Tentacle.CONSTANT>() {
 
 	type Callback = (data: T) => void
 
